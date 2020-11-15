@@ -1,6 +1,6 @@
 # Language Study : Rust
 
-**(A) History and Current Status : **
+**(A) History and Current Status :**
 
 *Rust* was started as a personal project in 2006 by Graydon Hoare, then an employee at the Mozilla corporation. Mozilla began to sponsor the project in 2009 and accounted it in 2010. The first compiler was written before 2010 in OCaml. After the Mozilla announcement work shifted to a self-hosting compiler `rustc`, which successfully compiled itself in 2011.  
 
@@ -19,7 +19,7 @@ Major changes throughout the languages history include...
 
 Among many many other smaller changes! 
 
-One of the most interesting parts about rust is it's entirely open source nature, with the entire source code of the language and all it's systems available for browsing (here)[https://github.com/rust-lang]. 
+One of the most interesting parts about rust is it's entirely open source nature, with the entire source code of the language and all it's systems available for browsing [here](https://github.com/rust-lang). 
 
 
 
@@ -27,11 +27,11 @@ One of the most interesting parts about rust is it's entirely open source nature
 
 Rust is an extremely *multi-paradigm* language, with it's two main designs being 
 
-- **Functional : ** Rust isn't a "purely functional" language like Haskell, but it does adhere to many of the tenets of functional programming. Namely ... 
+- **Functional :** Rust isn't a "purely functional" language like Haskell, but it does adhere to many of the tenets of functional programming. Namely ... 
   - Rust is Immutable by default. In fact, all variables that one wants to be mutable must be specified as such
   - Rust supports lambda functions, and allows them to be treated as *first-class* objects with Higher-Order functions like `map` and `fold`. 
   - However, rust does still allow for side effects, iteration, and more, leading many to call it an imperative language with functional elements. 
-- **Imperative / OO : ** Rust's object oriented nature comes from it's `trait` system. Traits are *basically* interfaces, which contain method headers specifying input and return types, without implementation. These traits are then *applied* to structs (exactly like the c `struct`) in a similar manner to how a Java class would implement and interface.  While a little convoluted at first, this does provide for OO programming using the two systems `structs` and `traits` to create classes.
+- **Imperative / OO :** Rust's object oriented nature comes from it's `trait` system. Traits are *basically* interfaces, which contain method headers specifying input and return types, without implementation. These traits are then *applied* to structs (exactly like the c `struct`) in a similar manner to how a Java class would implement and interface.  While a little convoluted at first, this does provide for OO programming using the two systems `structs` and `traits` to create classes.
 
 Rust is also a *concurrent*, *generic* and more language, though I will leave out descriptions of those Paradigms as they were not covered and I only vaguely understand what they mean. 
 
@@ -51,7 +51,7 @@ Finally, functions ARE first class types in Rust. This means that they can be pa
 
 
 
-**(D) Control Structures : ** 
+**(D) Control Structures :** 
 
 Rust is mostly quite standard in it's control structures. Things like `while loops` and `if` statements are the exact same as any other language. However, there are some interesting differences. 
 
