@@ -74,25 +74,33 @@ In addition to these rust also supports recursion, which combined with it's immu
 
 
 **(E) Semantics :** 
+
 Scope in rust is weird, It’s static but  scope doesn’t just affect if you can access the data in a variable but the underlying memory as well. When a variable goes out of scope, the memory is automatically freed, you can transfer the ownership of that memory (in addition to the value). This is called a move, for this to work a variable must be saved on the heap (using the Box type) instead of on the stack by default. Since variables are immutable by default, the difference between them and a constant is that constants are declared with the const keyword, and its type must be declared, unlike variables which can infer them, constants must be set to a constant static expression, they cannot be set to the result of a function call, constants cannot be shadowed by a new value, unlike variables. Garbage collection in rust is also unique, while it does not have a garbage collector in the traditional sense, as stated before memory is automatically freed once it goes out of scope. Rust memory rules are enforced at compile time so everything is guaranteed to be leak safe.So you don’t have to worry about doing it yourself unless you use the unsafe keyword 
 
 **(F) Desirable Language Characteristics :** 
+
 Efficiency: Rust is similar to C and C++ in terms of efficiency because it compiles directly to machine code for a specific platform. Like C and C++, this also comes at the cost of code being platform specific, meaning code must be recompiled for different platforms, unlike a language like Java or Python
 
 Regularity: 
+
 *Finish this after writing part2* 
 Seems like it mostly adheres to this, although that seems to be more out of making sure the compiler is happy with your code. 
 
-Security/Reliability: Major focus of Rust, and a major upgrade over other system programming languages. Memory management is handled by rust unless the user uses the unsafe keyword for manual control, and the rules of memory management are enforced during compile time. All of this means that any compiled rust program is memory safe.
+Security/Reliability:
+
+Major focus of Rust, and a major upgrade over other system programming languages. Memory management is handled by rust unless the user uses the unsafe keyword for manual control, and the rules of memory management are enforced during compile time. All of this means that any compiled rust program is memory safe.
 https://doc.rust-lang.org/nomicon/meet-safe-and-unsafe.html
 
 Extensibility: 
+
 Rust comes with the cargo package manager, something I haven’t seen for a system programming language and is usually a feature reserved for high level languages like ruby, python, or javascript. Cargo can manage dependencies, download, install and update modules, and build and test projects. It also has a cool fancy website where you can brows different libraries submitted by the community at https://crates.io/
 
 **(G) Support for Data Abstractions :** 
+
 Data types in the standard library are fairly standard for any programming language, scalar types represent types with a single value: integers can be signed or unsigned and rust lets you pick the size from 8 all the way to 128 bits, 32 is the default. Floats can be 32 or 64 bits as well, Strings are a higher abstraction of the character type, which abstracts the unicode values, (you can even put emojis in your code if you wanted to???). Rust has tuples for pattern matching and arrays, which are not resizable, and unlike C actually enforces its size to keep memory safe. Classes aren’t really a thing. Like C there is a struct type that allows you to hold many different types of data under one label, and enums allow you to set custom types with defined states. However in rust we can create an impl block, to add implementation to a strut or enums, where we can add methods.  We also have a trait block, which behaves similar to an interface in java for implementation of struct methods. Again, memory management is a big abstraction handled by rust, and custom data types can have their own deallocation block for code to run before it gets deallocated by implementing the deref trait. 
 
 **(H) Syntax :** 
+
 Sorta a mix of C, C++. Java and Haskell. It’s confusing when types don’t have to be explicitly stated and when they do, creating new data types can be a bit convoluted compared to something like python, where the format for creating classes is very clear. You don’t include a “;” for expressions, which can be confusing as well. However the documentation for the syntax is the best I’ve ever seen for a language, making it easy to get over these hurdles. Code is fairly easy to read once you understand Rust rules on mutability and memory access. 
 
 
