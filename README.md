@@ -6,16 +6,16 @@
 
 The language was developed as a replacement for the older systems languages `c` and `c++`, with the express intent of preventing the problems that arise in those languages from users having to specify their own memory. 
 
-The first stable version $1.0.0$ was released in 2015. The added support for *cargo* rust's built in dependency management system. Since then there have ben $47$ releases. 
+The first stable version *1.0.0* was released in 2015. The added support for *cargo* rust's built in dependency management system. Since then there have ben *47* releases. 
 
-The current stable version is $1.47.0$ released on the 8th of October 2020, and a compiler can be found [here](https://doc.rust-lang.org/book/ch01-01-installation.html). The compiler itself is installed using the `rustup` program. 
+The current stable version is *1.47.0* released on the 8th of October 2020, and a compiler can be found [here](https://doc.rust-lang.org/book/ch01-01-installation.html). The compiler itself is installed using the `rustup` program. 
 
 Major changes throughout the languages history include...
 
-- Major changes to the *cargo* package manager in $1.5.0$
-- The stabilization of the `libcore` package in $1.6.0$ 
-- The addition of a `try` operator in $1.13.0$
-- The stabilization of asynchronous operations in $1.39.0$ 
+- Major changes to the *cargo* package manager in *1.5.0*
+- The stabilization of the `libcore` package in *1.6.0*
+- The addition of a `try` operator in *1.13.0*
+- The stabilization of asynchronous operations in *1.39.0* 
 
 Among many many other smaller changes! 
 
