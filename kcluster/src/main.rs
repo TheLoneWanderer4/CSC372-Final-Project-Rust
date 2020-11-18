@@ -39,6 +39,16 @@ fn get_initial_clusters(k: usize, points: &Vec<(i32, i32)>) -> Vec<Vec<(i32,i32)
     }
 
 }
+//NOTE: DO .copy ON ANY VECTOR YOU'RE PASSING IN, OTHERWISE RUST DOES WEIRD VODO MAGIC I DONT UNDERSTAND WITH TRANSFERING OWERNSHIP AND CAUSES AN ERROR
+fn cluster_stable(cluster_a: Vec<Vec<(i32,i32)>>, cluster_b: Vec<Vec<(i32,i32)>>) -> bool{
+    let matching = cluster_a.iter().zip(cluster_b.iter()).filter(|(a, b)| is_stabe(a, b)).count();
+    return matching == cluster_a.len();
+}
+
+fn is_stabe(list_a: &Vec<(i32, i32)>, list_b: &Vec<(i32, i32)>) -> bool{
+    let matching = list_a.iter().zip(list_b.iter()).filter(|&(a, b)| a == b).count();
+    return matching == list_a.len();
+}
 
 fn main() {
     let args: Vec<String> = env::args().collect();
@@ -51,7 +61,6 @@ fn main() {
 
     let points: Vec<(i32, i32)> = get_points(file[2..].to_vec());
     let clusters: Vec<Vec<(i32,i32)>> = get_initial_clusters(k, &points);
-
 
     println!("{} {} {:?} {:?}", k, n, points, clusters);
 }
