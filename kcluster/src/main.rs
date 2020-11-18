@@ -9,6 +9,7 @@ fn get_file_string(file_name: &String) -> String {
 fn get_file_vector(file_name: &String) -> Vec<String> {
     return get_file_string(file_name)
         .split("\n")
+        // adding an extra split to remove the "\r" of windows files 
         .map(|x| String::from(x.strip_suffix("\r").unwrap_or(x)))
         .collect::<Vec<String>>();
 }
@@ -25,9 +26,15 @@ fn get_points(data: Vec<String>) -> Vec<(i32,i32)> {
         .collect();
 }
 
+/**
+ * Purpose : take a value k and vector of points and return the inital k clusters from the points
+ * Params : 
+ *  k       : the number of clusters to make. This is assumed to be less than the length of points 
+ *  points  : the vector of points used to generate the initial clusters 
+ * Return : 
+ *  a vector of k vectors of length one each containing one value from points 0 through k-1 
+ */ 
 fn get_initial_clusters(k: usize, points: &Vec<(i32, i32)>) -> Vec<Vec<(i32,i32)>> {
-    let ret: Vec<Vec<(i32,i32)>> = Vec::new();
-
     if k == 0 {
         return Vec::new();
     } else {
@@ -37,7 +44,6 @@ fn get_initial_clusters(k: usize, points: &Vec<(i32, i32)>) -> Vec<Vec<(i32,i32)
         ret.push(new);
         return ret;
     }
-
 }
 //NOTE: DO .copy ON ANY VECTOR YOU'RE PASSING IN, OTHERWISE RUST DOES WEIRD VODO MAGIC I DONT UNDERSTAND WITH TRANSFERING OWERNSHIP AND CAUSES AN ERROR
 fn cluster_stable(cluster_a: Vec<Vec<(i32,i32)>>, cluster_b: Vec<Vec<(i32,i32)>>) -> bool{
@@ -57,11 +63,11 @@ fn main() {
     let file: Vec<String> = get_file_vector(&args[1]);
 
     let k = file[0].parse::<usize>().unwrap();
-    let n = file[1].parse::<i32>().unwrap();
 
     let points: Vec<(i32, i32)> = get_points(file[2..].to_vec());
     let clusters: Vec<Vec<(i32,i32)>> = get_initial_clusters(k, &points);
 
-    println!("{} {} {:?} {:?}", k, n, points, clusters);
+
+    println!("{} {:?} {:?}", k, points, clusters);
 }
 
