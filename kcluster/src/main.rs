@@ -1,11 +1,23 @@
 use std::env;
 use std::fs;
 
+/*
+ * Purpose : open a file of name : file_name, and return the contents of that 
+ *           file as a string.
+ */
 fn get_file_string(file_name: &String) -> String {
     return fs::read_to_string(file_name)
         .expect("Something went wrong reading the file");
 }
 
+/*
+ * Purpose : take a file name and return a vector containing each of the "lines"
+ *           of that file their newlines and cardige return characters removed. 
+ * Params : 
+ *    file_name : the name of the file to parse 
+ * Return : 
+ *    a vector containing the cleaned lines of the file "file_name"
+ */
 fn get_file_vector(file_name: &String) -> Vec<String> {
     return get_file_string(file_name)
         .split("\n")
@@ -14,6 +26,18 @@ fn get_file_vector(file_name: &String) -> Vec<String> {
         .collect::<Vec<String>>();
 }
 
+/*
+ * Purpose : given a vector of strings where each string is of the form 
+ *           "f32 f32" compute a vector of points (f32, f32) representing the 
+ *           data from each string 
+ *
+ *           this function assumes the strings in data are well formated, and 
+ *           will produce errors if they are not 
+ * Params : 
+ *    data : the vector of strings
+ * Return : 
+ *    a vector of (f32, f32)
+ */
 fn get_points(data: Vec<String>) -> Vec<(f32,f32)> {
     return data
         .into_iter()
@@ -26,8 +50,9 @@ fn get_points(data: Vec<String>) -> Vec<(f32,f32)> {
         .collect();
 }
 
-/**
+/*
  * Purpose : take a value k and vector of points and return the inital k clusters from the points
+ *           this function assumes k < the length of points, and will produce errors if it is not
  * Params : 
  *  k       : the number of clusters to make. This is assumed to be less than the length of points 
  *  points  : the vector of points used to generate the initial clusters 
@@ -45,6 +70,22 @@ fn get_initial_clusters(k: usize, points: &Vec<(f32, f32)>) -> Vec<Vec<(f32,f32)
         return ret;
     }
 }
+
+/*
+ * Purpose : compute the centroid of a given vector of points 
+ *           a centroid is defined as a tuple of the mean of the x and the mean of the y
+ *           values of the points in the vector. 
+ * Params : 
+ *  cluster : the vector to compute the centroid of 
+ * Return : (mean of x, mean of y)
+ */
+fn compute_centroid(cluster: &Vec<(f32, f32)>) -> (f32, f32) {
+    return (
+        cluster.iter().fold(0.0, |acc, x| acc + x.0) / cluster.len() as f32,
+        cluster.iter().fold(0.0, |acc, x| acc + x.1) / cluster.len() as f32
+    );
+}
+
 //NOTE: DO .copy ON ANY VECTOR YOU'RE PASSING IN, OTHERWISE RUST DOES WEIRD VODO MAGIC I DONT UNDERSTAND WITH TRANSFERING OWERNSHIP AND CAUSES AN ERROR
 fn cluster_stable(cluster_a: &Vec<Vec<(f32,f32)>>, cluster_b: &Vec<Vec<(f32,f32)>>) -> bool{
     let matching = cluster_a.iter().zip(cluster_b.iter()).filter(|(a, b)| is_stabe(a, b)).count();
@@ -79,7 +120,7 @@ fn main() {
         
         // compute modifications to clusters 
         
-        println!("Howdy");
+        println!("{:?}", compute_centroid(&points));
     }
 }
 
