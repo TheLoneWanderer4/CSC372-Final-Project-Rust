@@ -14,13 +14,13 @@ fn get_file_vector(file_name: &String) -> Vec<String> {
         .collect::<Vec<String>>();
 }
 
-fn get_points(data: Vec<String>) -> Vec<(i32,i32)> {
+fn get_points(data: Vec<String>) -> Vec<(f32,f32)> {
     return data
         .into_iter()
-        .map(|line: String| -> (i32, i32){
+        .map(|line: String| -> (f32, f32){
             let hold: Vec<&str> = line.split(" ").collect();
-            let x = hold[0].parse::<i32>().unwrap();
-            let y = hold[1].parse::<i32>().unwrap();
+            let x = hold[0].parse::<f32>().unwrap();
+            let y = hold[1].parse::<f32>().unwrap();
             return (x,y);
         })
         .collect();
@@ -34,7 +34,7 @@ fn get_points(data: Vec<String>) -> Vec<(i32,i32)> {
  * Return : 
  *  a vector of k vectors of length one each containing one value from points 0 through k-1 
  */ 
-fn get_initial_clusters(k: usize, points: &Vec<(i32, i32)>) -> Vec<Vec<(i32,i32)>> {
+fn get_initial_clusters(k: usize, points: &Vec<(f32, f32)>) -> Vec<Vec<(f32,f32)>> {
     if k == 0 {
         return Vec::new();
     } else {
@@ -46,12 +46,12 @@ fn get_initial_clusters(k: usize, points: &Vec<(i32, i32)>) -> Vec<Vec<(i32,i32)
     }
 }
 //NOTE: DO .copy ON ANY VECTOR YOU'RE PASSING IN, OTHERWISE RUST DOES WEIRD VODO MAGIC I DONT UNDERSTAND WITH TRANSFERING OWERNSHIP AND CAUSES AN ERROR
-fn cluster_stable(cluster_a: Vec<Vec<(i32,i32)>>, cluster_b: Vec<Vec<(i32,i32)>>) -> bool{
+fn cluster_stable(cluster_a: &Vec<Vec<(f32,f32)>>, cluster_b: &Vec<Vec<(f32,f32)>>) -> bool{
     let matching = cluster_a.iter().zip(cluster_b.iter()).filter(|(a, b)| is_stabe(a, b)).count();
     return matching == cluster_a.len();
 }
 
-fn is_stabe(list_a: &Vec<(i32, i32)>, list_b: &Vec<(i32, i32)>) -> bool{
+fn is_stabe(list_a: &Vec<(f32, f32)>, list_b: &Vec<(f32, f32)>) -> bool{
     let matching = list_a.iter().zip(list_b.iter()).filter(|&(a, b)| a == b).count();
     return matching == list_a.len();
 }
@@ -63,11 +63,23 @@ fn main() {
     let file: Vec<String> = get_file_vector(&args[1]);
 
     let k = file[0].parse::<usize>().unwrap();
+    let n = file[1].parse::<usize>().unwrap();
 
-    let points: Vec<(i32, i32)> = get_points(file[2..].to_vec());
-    let clusters: Vec<Vec<(i32,i32)>> = get_initial_clusters(k, &points);
+    if k > n {
+        println!("Can't have more clusters than data points");
+        return;
+    }
 
+    let points: Vec<(f32, f32)> = get_points(file[2..].to_vec());
+    let mut previous_clusters: Vec<Vec<(f32,f32)>> = Vec::new();
+    let clusters: Vec<Vec<(f32,f32)>> = get_initial_clusters(k, &points);
 
-    println!("{} {:?} {:?}", k, points, clusters);
+    while !cluster_stable(&clusters, &previous_clusters) {
+        previous_clusters = clusters.clone();
+        
+        // compute modifications to clusters 
+        
+        println!("Howdy");
+    }
 }
 
