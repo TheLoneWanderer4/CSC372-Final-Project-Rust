@@ -2,6 +2,30 @@ use std::env;
 use std::fs;
 
 /*
+    Name : Amin Sennour and Mahmood Gladney
+    Class : CSC 372
+    Assigment : Final Project -> Part 2
+    File : main.rs
+    Instructor : Dr. Mccann 
+    Due Date : November 23rd 2020 
+    Description : 
+        Document can be found at : 
+        https://github.com/TheLoneWanderer4/CSC372-Final-Project-Rust
+    
+        A program that implments "k-means" clustering on a set of xy coordinates
+
+        the program produces as output the final k-clusters and their centroids, as well as
+        how man itterations it took to compute them.
+    Requirments :
+        Language : Rust
+        Extra :
+            None
+    Problems :
+        There is no input validation, so an incorrectly structured, or missing, input file
+        will produce unpredictable erros. 
+*/
+
+/*
  * Purpose : open a file of name : file_name, and return the contents of that 
  *           file as a string.
  */
@@ -85,23 +109,44 @@ fn compute_centroid(cluster: &Vec<(f32, f32)>) -> (f32, f32) {
         cluster.iter().fold(0.0, |acc, x| acc + x.1) / cluster.len() as f32
     );
 }
-
-//NOTE: DO .copy ON ANY VECTOR YOU'RE PASSING IN, OTHERWISE RUST DOES WEIRD VODO MAGIC I DONT UNDERSTAND WITH TRANSFERING OWERNSHIP AND CAUSES AN ERROR
+/*
+ * Purpose : Takes in two cluster and compares them to see if they contain the same values,
+ *           if so, return true as the cluster is consider stable
+ * Params : 
+ *  cluster_a : a vector of vector of tuples with two floats, repersenting the x,y positions
+ *  cluster_b : a vector of vector of tuples with two floats, repersenting the x,y positions
+ * Return : true if the clusters are the same, false otherwise
+ */
 fn cluster_stable(cluster_a: &Vec<Vec<(f32,f32)>>, cluster_b: &Vec<Vec<(f32,f32)>>) -> bool{
     let matching = cluster_a.iter().zip(cluster_b.iter()).filter(|(a, b)| is_stabe(a, b)).count();
     return matching == cluster_a.len();
 }
-
+/*
+ * Purpose : Similar to cluster_stable, but compares the internal vectors of the clusters to 
+ *           see if they contain the same values. Helper function for cluster_stable   
+ * Params : 
+ *  list_a : a vector of tuples with two floats, repersenting the x,y positions
+ *  list_b : a vector of tuples with two floats, repersenting the x,y positions
+ * Return : true if the two vectors are the same, false otherwise
+ */
 fn is_stabe(list_a: &Vec<(f32, f32)>, list_b: &Vec<(f32, f32)>) -> bool{
     let matching = list_a.iter().zip(list_b.iter()).filter(|&(a, b)| a == b).count();
     return matching == list_a.len();
 }
-
-fn assgnToCluster(centroids: &Vec<(f32,f32)>, data_point: (f32,f32)) -> usize{
+/*
+ * Purpose : Takes in a list of centroids, and a data point, and returns the index of the
+ *           centroid that the data point should be assigned to.
+ * Params : 
+ *  centroids : a vector of centroids which are a tuple of two float val (x,y)
+ *  data_point: a tuple of two float vals, (x,y)
+ * Return : an integer index of that points to the centroid point that the data point
+ * should be assigned to its cluster
+ */
+fn assgn_to_cluster(centroids: &Vec<(f32,f32)>, data_point: (f32,f32)) -> usize{
     let mut smallest_dist = compute_distance(centroids[0], data_point);
     let mut index = 0;
     let mut i = 1;
-    while i > centroids.len(){
+    while i < centroids.len(){
         let temp_dist = compute_distance(centroids[i], data_point);
         if temp_dist < smallest_dist{
             smallest_dist = temp_dist;
@@ -111,11 +156,17 @@ fn assgnToCluster(centroids: &Vec<(f32,f32)>, data_point: (f32,f32)) -> usize{
     }
     return index;
 } 
-
+/*
+ * Purpose : compute the distance between a centroid point and a data point
+ *           as define by the spec. 
+ * Params : 
+ *  centroid : tuple of two float val (x,y)
+ *  data_point: a tuple of two float vals, (x,y)
+ * Return : a float value repersenting the distance between the two points
+ */
 fn compute_distance(centroid: (f32, f32), data_point: (f32,f32)) -> f32{
     return (data_point.0 - centroid.0).powi(2) + (data_point.1 - centroid.1).powi(2);
 }
-
 
 fn main() {
     let args: Vec<String> = env::args().collect();
@@ -126,21 +177,37 @@ fn main() {
     let k = file[0].parse::<usize>().unwrap();
     let n = file[1].parse::<usize>().unwrap();
 
+    // error checking
     if k > n {
         println!("Can't have more clusters than data points");
         return;
     }
 
+    // declare state variables 
     let points: Vec<(f32, f32)> = get_points(file[2..].to_vec());
     let mut previous_clusters: Vec<Vec<(f32,f32)>> = Vec::new();
-    let clusters: Vec<Vec<(f32,f32)>> = get_initial_clusters(k, &points);
+    let mut clusters: Vec<Vec<(f32,f32)>> = get_initial_clusters(k, &points);
+    let mut iterations = 0;
 
+    // main loop
     while !cluster_stable(&clusters, &previous_clusters) {
         previous_clusters = clusters.clone();
-        
-        // compute modifications to clusters 
-        
-        println!("{:?}", compute_centroid(&points));
+        let centroids: Vec<(f32,f32)> = previous_clusters.iter().map(|x| compute_centroid(x)).collect();
+
+        clusters = clusters.iter().map(|_| Vec::new()).collect();
+        for x in &points {
+            let new_index = assgn_to_cluster(&centroids, *x);
+            clusters[new_index].push(*x);
+        }
+        iterations+=1;
     }
+
+    // produce required output 
+    
+    println!("The final centroid locations are:\n");
+    for i in 0..clusters.len() {
+        println!("u({}) = {:?}",i+1, compute_centroid(&clusters[i]));
+    }
+    println!("\n{} iterations were required.", iterations);
 }
 
