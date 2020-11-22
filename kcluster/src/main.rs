@@ -97,6 +97,26 @@ fn is_stabe(list_a: &Vec<(f32, f32)>, list_b: &Vec<(f32, f32)>) -> bool{
     return matching == list_a.len();
 }
 
+fn assgnToCluster(centroids: &Vec<(f32,f32)>, data_point: (f32,f32)) -> usize{
+    let mut smallest_dist = compute_distance(centroids[0], data_point);
+    let mut index = 0;
+    let mut i = 1;
+    while i > centroids.len(){
+        let temp_dist = compute_distance(centroids[i], data_point);
+        if temp_dist < smallest_dist{
+            smallest_dist = temp_dist;
+            index = i;
+        }
+        i = i + 1;
+    }
+    return index;
+} 
+
+fn compute_distance(centroid: (f32, f32), data_point: (f32,f32)) -> f32{
+    return (data_point.0 - centroid.0).powi(2) + (data_point.1 - centroid.1).powi(2);
+}
+
+
 fn main() {
     let args: Vec<String> = env::args().collect();
 
