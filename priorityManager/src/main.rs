@@ -19,7 +19,8 @@ fn get_filename() -> String {
 fn main() {
     let filename: String = get_filename();
 
-/*     let test_task = Task {
+    let mut test_task = Task {
+        id : 0,
         name : String::from("This is a test"),
         desc : String::from("We are using this to test"),
         date : NaiveDate::from_ymd(2015, 3, 14),
@@ -31,6 +32,7 @@ fn main() {
     };
 
     let mut deserialized: Vec<Task> = get_tasks_from_file(&filename);
+    test_task.id = deserialized.len();
     deserialized.push(test_task);
 
     for task in &deserialized {
