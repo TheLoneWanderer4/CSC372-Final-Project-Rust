@@ -20,6 +20,7 @@ impl fmt::Display for Rules {
 
 #[derive(Serialize, Deserialize, Debug)]
 pub struct Task {
+    pub id: usize,
     pub name: String,
     pub desc: String,
     pub date: NaiveDate,
@@ -29,8 +30,8 @@ pub struct Task {
 
 impl fmt::Display for Task {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-        write!(f, "Name : {}\nDescription : {}\nDue Date : {} \nPriority : {}\nRules: {}\n",
-                self.name, self.desc, self.date, self.prio, self.rule)
+        write!(f, "Id: {}\nName : {}\nDescription : {}\nDue Date : {} \nPriority : {}\nRules: {}\n",
+                self.id, self.name, self.desc, self.date, self.prio, self.rule)
     }
 }
 
