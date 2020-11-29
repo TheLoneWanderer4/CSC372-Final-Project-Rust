@@ -5,12 +5,20 @@ use std::fs::File;
 use std::fmt;
 use std::io::prelude::*;
 use chrono::{NaiveDate};
+use std::cmp::Ordering;
 
-#[derive(Serialize, Deserialize, Debug)]
+#[derive(Serialize, Deserialize, Debug,Eq)]
 pub struct Rules {
     pub rise: i32, 
     pub when: i32
 }
+
+impl PartialEq for Rules {
+    fn eq(&self, other: &Self) -> bool {
+        self.rise == other.rise && self.when == other.when
+    }
+}
+
 
 impl fmt::Display for Rules {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
@@ -18,7 +26,7 @@ impl fmt::Display for Rules {
     }
 }
 
-#[derive(Serialize, Deserialize, Debug)]
+#[derive(Serialize, Deserialize, Debug,Eq)]
 pub struct Task {
     pub id: usize,
     pub name: String,
@@ -27,6 +35,24 @@ pub struct Task {
     pub prio: i32,
     pub rule: Rules
 }
+
+impl Ord for Task{
+    fn cmp(&self, other: &Self) -> Ordering {
+        self.date.cmp(&other.date)
+    }
+}
+
+impl PartialOrd for Task {
+    fn partial_cmp(&self, other: &Self) -> Option<Ordering> {
+        Some(self.cmp(other))
+    }
+}
+impl PartialEq for Task {
+    fn eq(&self, other: &Self) -> bool {
+        self.date == other.date
+    }
+}
+
 
 impl fmt::Display for Task {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {

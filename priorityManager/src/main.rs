@@ -1,4 +1,5 @@
 mod models;
+use rand::Rng;
 use std::env;
 use std::io;
 use chrono::{NaiveDate};
@@ -19,7 +20,7 @@ fn get_filename() -> String {
 fn main() {
     let filename: String = get_filename();
 
-    let mut test_task = Task {
+/*     let mut test_task = Task {
         id : 0,
         name : String::from("This is a test"),
         desc : String::from("We are using this to test"),
@@ -41,7 +42,7 @@ fn main() {
 
     if write_tasks_to_file(&filename, &deserialized).is_err() {
         println!("File not found");
-    } */
+    }  */
 
     let mut exitLoop = false;
     while !exitLoop{
@@ -51,17 +52,30 @@ fn main() {
             .read_line(&mut userInput)
             .expect("Failed to read line");
         let words: Vec<&str> = userInput.split_whitespace().collect();
-        println!("You guessed: {:?}", words);
+        //println!("You typed: {:?}", words);
         match words[0] {
             "list_all" => list_all(&filename),
             "add_task" => add_task(&filename, words),
-            "list" => println!("to be implimented "),
+            "list" => list(&filename, words),
             "edit" => println!("to be implimented "),
-            "info" => println!("to be implimented "),
+            "info" => info(&filename, words),
             "reload" => println!("to be implimented "),
             _ => println!("invalid input"),
         }
     }
+}
+
+fn info(file_name: &String, user_input: Vec<&str>){
+    let curr_id:usize = user_input[1].parse().unwrap();
+    let deserialized: Vec<Task> = get_tasks_from_file(&file_name);
+    for task in &deserialized {
+        if task.id == curr_id{
+            println!("{}", task);
+            return (); 
+        }
+    }
+    println!("Task could not be found");
+
 }
 
 fn add_task(file_name: &String, user_input: Vec<&str>){
@@ -91,6 +105,7 @@ fn add_task(file_name: &String, user_input: Vec<&str>){
         inputwhen = user_input[user_input.iter().position(|&x| x == "-when").unwrap()+1].parse().unwrap();
     }
     let curr_task = Task {
+        id   : rand::thread_rng().gen_range(1, 100000),
         name : String::from(inputname),
         desc : String::from(inputdesc),
         date : NaiveDate::from(date_only.unwrap()),
@@ -108,8 +123,27 @@ fn add_task(file_name: &String, user_input: Vec<&str>){
 }
 
 fn list_all(file_name: &String) {
-    let deserialized: Vec<Task> = get_tasks_from_file(&file_name);
+    let mut deserialized: Vec<Task> = get_tasks_from_file(&file_name);
+    deserialized.sort();
     for task in &deserialized {
+        println!("{}", task);
+    }
+}
+
+fn list(file_name: &String,user_input: Vec<&str>){
+    let deserialized: Vec<Task> = get_tasks_from_file(&file_name);
+    let mut aflag = false;
+    if user_input.contains(&"-a"){
+        aflag = true;
+    }
+    let mut querry_tasks: Vec<&Task> = Vec::new();
+    let priority:i32 = user_input[1].parse().unwrap();
+    for task in &deserialized {
+        if task.prio == priority{ querry_tasks.push(task); }
+        else if task.prio > priority && aflag{ querry_tasks.push(task); }
+    }
+    querry_tasks.sort();
+    for task in &querry_tasks {
         println!("{}", task);
     }
 }
