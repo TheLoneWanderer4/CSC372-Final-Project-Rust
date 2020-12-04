@@ -2,6 +2,7 @@ mod models;
 use rand::Rng;
 use std::env;
 use std::io;
+use std::cmp::min;
 use chrono::{NaiveDate};
 use crate::models::{Task, Rules, get_tasks_from_file, write_tasks_to_file};
 
@@ -20,39 +21,20 @@ fn get_filename() -> String {
 fn main() {
     let filename: String = get_filename();
 
-/*     let mut test_task = Task {
-        id : 0,
-        name : String::from("This is a test"),
-        desc : String::from("We are using this to test"),
-        date : NaiveDate::from_ymd(2015, 3, 14),
-        prio : 2,
-        rule : Rules {
-            rise : 5,
-            when : 0
-        }
-    };
-
-    let mut deserialized: Vec<Task> = get_tasks_from_file(&filename);
-    test_task.id = deserialized.len();
-    deserialized.push(test_task);
-
-    for task in &deserialized {
-        println!("{}", task);
-    }
-
-    if write_tasks_to_file(&filename, &deserialized).is_err() {
-        println!("File not found");
-    }  */
-
-    let mut exitLoop = false;
-    while !exitLoop{
-        let mut userInput = String::new();
+    loop {
+        let mut user_input = String::new();
 
         io::stdin()
-            .read_line(&mut userInput)
+            .read_line(&mut user_input)
             .expect("Failed to read line");
-        let words: Vec<&str> = userInput.split_whitespace().collect();
-        //println!("You typed: {:?}", words);
+
+        let words: Vec<&str> = user_input.split_whitespace().collect();
+        
+        if words.len() < 1 {
+            println!("invalid input");
+            continue;
+        }
+
         match words[0] {
             "list_all" => list_all(&filename),
             "add_task" => add_task(&filename, words),
@@ -60,6 +42,7 @@ fn main() {
             "edit" => println!("to be implimented "),
             "info" => info(&filename, words),
             "reload" => println!("to be implimented "),
+            "exit" => break,
             _ => println!("invalid input"),
         }
     }
@@ -96,23 +79,29 @@ fn add_task(file_name: &String, user_input: Vec<&str>){
     io::stdin().read_line(&mut inputdate).expect("Failed to read line");
     inputdate = (&inputdate.trim_end()).to_string();
     let date_only = parse_from_str(&inputdate,"%Y-%m-%d");
-    let mut inputrise = 1;
+    let mut inputrise = 5;
     let mut inputwhen = 0;
+    let mut inputmaxp = 5;
     if user_input.contains(&"-rise"){
         inputrise = user_input[user_input.iter().position(|&x| x == "-rise").unwrap()+1].parse().unwrap();
     }
     if user_input.contains(&"-when"){
         inputwhen = user_input[user_input.iter().position(|&x| x == "-when").unwrap()+1].parse().unwrap();
     }
+    if user_input.contains(&"-maxp"){
+        inputmaxp = user_input[user_input.iter().position(|&x| x == "-maxp").unwrap()+1].parse().unwrap();
+    }
     let curr_task = Task {
-        id   : rand::thread_rng().gen_range(1, 100000),
-        name : String::from(inputname),
-        desc : String::from(inputdesc),
-        date : NaiveDate::from(date_only.unwrap()),
-        prio : inputprio.parse().unwrap(),
-        rule : Rules {
+        id            : rand::thread_rng().gen_range(1, 100000),
+        name          : String::from(inputname.trim()),
+        desc          : String::from(inputdesc.trim()),
+        date          : NaiveDate::from(date_only.unwrap()),
+        prio          : min(inputprio.parse().unwrap(), inputmaxp),
+        original_prio : min(inputprio.parse().unwrap(), inputmaxp),
+        rule          : Rules {
             rise : inputrise,
-            when : inputwhen
+            when : inputwhen,
+            maxp : inputmaxp
         }
     };
     deserialized.push(curr_task);
@@ -137,7 +126,7 @@ fn list(file_name: &String,user_input: Vec<&str>){
         aflag = true;
     }
     let mut querry_tasks: Vec<&Task> = Vec::new();
-    let priority:i32 = user_input[1].parse().unwrap();
+    let priority:i64 = user_input[1].parse().unwrap();
     for task in &deserialized {
         if task.prio == priority{ querry_tasks.push(task); }
         else if task.prio > priority && aflag{ querry_tasks.push(task); }

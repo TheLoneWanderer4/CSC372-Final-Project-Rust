@@ -4,13 +4,14 @@ use std::fs;
 use std::fs::File;
 use std::fmt;
 use std::io::prelude::*;
-use chrono::{NaiveDate};
+use chrono::{NaiveDate, Local, DateTime, Utc, Duration};
 use std::cmp::Ordering;
 
 #[derive(Serialize, Deserialize, Debug,Eq)]
 pub struct Rules {
-    pub rise: i32, 
-    pub when: i32
+    pub rise: i64, 
+    pub when: i64,
+    pub maxp: i64
 }
 
 impl PartialEq for Rules {
@@ -19,10 +20,9 @@ impl PartialEq for Rules {
     }
 }
 
-
 impl fmt::Display for Rules {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-        write!(f, "\tRise : {}\n\tWhen : {}", self.rise, self.when)
+        write!(f, "Rise : {} When : {}", self.rise, self.when)
     }
 }
 
@@ -32,7 +32,8 @@ pub struct Task {
     pub name: String,
     pub desc: String,
     pub date: NaiveDate,
-    pub prio: i32,
+    pub prio: i64,
+    pub original_prio: i64,
     pub rule: Rules
 }
 
@@ -53,12 +54,63 @@ impl PartialEq for Task {
     }
 }
 
-
 impl fmt::Display for Task {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-        write!(f, "Id: {}\nName : {}\nDescription : {}\nDue Date : {} \nPriority : {}\nRules: {}\n",
-                self.id, self.name, self.desc, self.date, self.prio, self.rule)
+        write!(f, "|\n| Id: {} | Name : {} | Due : {} | Priority : {} | Rules: [{}]\n| Description : {}",
+                self.id, self.name, self.date, self.prio, self.rule, self.desc)
     }
+}
+
+fn update_priority(mut task: Task) -> Task {
+    if task.prio > task.rule.maxp {
+        task.prio = task.rule.maxp;
+        return task;
+    }
+
+    let now = Local::now();
+    let due_date = DateTime::<Utc>::from_utc(task.date.and_hms(0,0,0), Utc);
+    let difference = due_date.signed_duration_since(now).num_days();
+
+    // the case where the task is past due
+    if difference <= 0 {
+        task.prio = task.rule.maxp;
+        return task;
+    } 
+
+    // in the case where task.rule.when is 0 the only time priority should update 
+    // is when difference == 0
+    if task.rule.when != 0 {
+        // algorithm will set maxp one day before the due date. 
+        // This adds one day to the due date so that the result is correct 
+        let mut day_of_first_rise = task.date.checked_add_signed(Duration::days(1)).unwrap();
+        let mut hold = task.rule.maxp;
+        while hold > task.original_prio {
+            day_of_first_rise = day_of_first_rise.checked_sub_signed(Duration::days(task.rule.when)).unwrap();
+            hold -= task.rule.rise;
+        }
+        let day_of_first_rise = DateTime::<Utc>::from_utc(day_of_first_rise.and_hms(0,0,0), Utc);
+        let mut difference = now.signed_duration_since(day_of_first_rise).num_days();
+        
+        // the current day is before when the tasks priority should start rising 
+        if difference < 0 {
+            return task;
+        }
+
+        if difference == 0 {
+            difference = 1;
+        }
+
+        task.prio = task.original_prio + (task.rule.rise * (task.rule.when / difference));
+        if (task.prio > task.rule.maxp) {
+            task.prio = task.rule.maxp
+        }
+        return task;
+    }
+
+
+    // if none of the above conditions are met then the tasks priority doesn't need to 
+    // change 
+    return task;
 }
 
 fn serialize_tasks(task: &Vec<Task>) -> Result<String> {
@@ -79,7 +131,7 @@ pub fn get_tasks_from_file(file_name: &String) -> Vec<Task> {
     if file_result.is_err() {
         return Vec::new();
     } else {
-        return file_result.unwrap();
+        return file_result.unwrap().into_iter().map(|t| update_priority(t)).collect();
     }
 }
 
