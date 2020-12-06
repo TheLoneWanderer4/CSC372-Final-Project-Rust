@@ -4,7 +4,7 @@ use std::env;
 use std::io;
 use std::cmp::min;
 use chrono::{NaiveDate};
-use crate::models::{Task, Rules, get_tasks_from_file, write_tasks_to_file};
+use crate::models::{Task, Rules, get_tasks_from_file, write_tasks_to_file,update_priority};
 
 const DEFAULT_FILENAME: &str = "user/savedtasks";
 
@@ -39,13 +39,92 @@ fn main() {
             "list_all" => list_all(&filename),
             "add_task" => add_task(&filename, words),
             "list" => list(&filename, words),
-            "edit" => println!("to be implimented "),
+            "edit" => edit(&filename,words),
             "info" => info(&filename, words),
-            "reload" => println!("to be implimented "),
+            "reload" => reload(&filename),
             "exit" => break,
             _ => println!("invalid input"),
         }
     }
+}
+
+fn edit(file_name: &String, user_input: Vec<&str>){
+	if user_input.len() < 3{
+		println!("No args given");
+		return;
+	}
+    let curr_id:usize = user_input[1].parse().unwrap_or(0);
+    if curr_id == 0 {
+		println!("Invalid Input");
+        return;
+    } 
+	let deserialized: Vec<Task> = get_tasks_from_file(&file_name);
+    let mut foundTask = false;
+
+    let mut newDeserialized:Vec<Task> = deserialized.into_iter().map(|mut task| {
+        if task.id == curr_id{
+			foundTask = true;
+            for i in 2..user_input.len(){
+				match user_input[i]{
+					"-name" => {
+						let mut input = String::new();
+						println!("Give task name");
+						io::stdin().read_line(&mut input).expect("Failed to read line");
+						task.name = String::from(input.trim()); },
+					"-des" => {
+						let mut input = String::new();
+						println!("Give task description");
+						io::stdin().read_line(&mut input).expect("Failed to read line");
+						task.desc = String::from(input.trim()); },
+					"-due" => {
+						let mut input = String::new();
+						let parse_from_str = NaiveDate::parse_from_str;
+						println!("Give the date the task must be due by (example input: 2015-09-05)");
+						io::stdin().read_line(&mut input).expect("Failed to read line");
+						let date_only = parse_from_str(&input,"%Y-%m-%d");
+						task.date = NaiveDate::from(date_only.unwrap());},
+					"-rise" => {
+						let mut input = String::new();
+                        println!("Give rise");
+                        io::stdin().read_line(&mut input).expect("Failed to read line");
+                        task.rule.rise = input.trim().parse().unwrap() ;},
+					"-when" => {
+						let mut input = String::new();
+						println!("Give when");
+						io::stdin().read_line(&mut input).expect("Failed to read line");
+						task.rule.when = input.trim().parse().unwrap() ;},
+					"-maxp" => {
+						let mut input = String::new();
+						println!("Give max priority");
+						io::stdin().read_line(&mut input).expect("Failed to read line");
+						task.rule.maxp = input.trim().parse().unwrap() ;},
+					"-prio" => {
+						let mut input = String::new();
+						println!("Give max priority");
+						io::stdin().read_line(&mut input).expect("Failed to read line");
+						task.original_prio = min(input.parse().unwrap(),  task.rule.maxp); },	
+						//task.original_prio = input.parse().unwrap(); },
+					_ => println!("invalid input"),
+				}
+			}
+		}
+        return task;
+    }).collect();
+    if foundTask == false{
+        println!("Task {} not found",curr_id);
+    }
+	if write_tasks_to_file(&file_name, &newDeserialized).is_err() {
+        println!("File not found");
+    } 
+	reload(file_name);
+}
+
+fn reload(file_name: &String) {
+	let deserialized: Vec<Task> = get_tasks_from_file(&file_name).into_iter().map(|t| update_priority(t)).collect();
+
+	if write_tasks_to_file(&file_name, &deserialized).is_err() {
+        println!("File not found");
+    } 
 }
 
 fn info(file_name: &String, user_input: Vec<&str>){

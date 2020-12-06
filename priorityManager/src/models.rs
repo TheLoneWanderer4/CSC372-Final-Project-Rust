@@ -61,7 +61,7 @@ impl fmt::Display for Task {
     }
 }
 
-fn update_priority(mut task: Task) -> Task {
+pub(crate) fn update_priority(mut task: Task) -> Task {
     if task.prio > task.rule.maxp {
         task.prio = task.rule.maxp;
         return task;
