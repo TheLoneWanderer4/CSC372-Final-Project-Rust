@@ -54,6 +54,8 @@ fn main() {
                 println!("\t-rise indicates how much to raise the priority every (specified by -when) days before the duedate. The default is 5, indicating priority should rise to the max priority of this task.");
                 println!("\t-maxp indicates what the maximum priority of this task should be. The default, and cap, is 5.");
                 println!("\tThe remaining fields are supplied following the given prompt.");
+                println!("> remove id");
+                println!("\tRemoves / Completes the task having id id.");
                 println!("> list priority");
                 println!("\tLists all tasks having priority priority.");
                 println!("> edit id [-name] [-des] [-due] [-rise] [-when] [-maxp] [-prio]");
