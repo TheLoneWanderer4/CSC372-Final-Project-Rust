@@ -42,6 +42,7 @@ fn main() {
             "edit" => edit(&filename,words),
             "info" => info(&filename, words),
             "reload" => reload(&filename),
+            "remove" => remove(&filename, words),
             "help" => {
                 println!("Available Commands : ");
                 println!("> list_all ");
@@ -70,6 +71,19 @@ fn main() {
             _ => println!("invalid input"),
         }
     }
+}
+
+fn remove(file_name: &String, user_input: Vec<&str>) {
+    if user_input.len() < 2 {
+        println!("No id given");
+        return;
+    } 
+    let id:usize = user_input[1].parse().unwrap();
+    let deserialized: Vec<Task> = get_tasks_from_file(&file_name);
+    let output: Vec<Task> = deserialized.into_iter().filter(|task| task.id != id).collect();
+    if write_tasks_to_file(&file_name, &output).is_err() {
+        println!("File not found");
+    } 
 }
 
 fn edit(file_name: &String, user_input: Vec<&str>){
@@ -124,9 +138,10 @@ fn edit(file_name: &String, user_input: Vec<&str>){
 						task.rule.maxp = input.trim().parse().unwrap() ;},
 					"-prio" => {
 						let mut input = String::new();
-						println!("Give max priority");
-						io::stdin().read_line(&mut input).expect("Failed to read line");
-                        task.original_prio = min(input.parse().unwrap(),  task.rule.maxp); },	
+						println!("Give new priority");
+                        io::stdin().read_line(&mut input).expect("Failed to read line");
+                        task.original_prio = min(input.trim().parse().unwrap(),  task.rule.maxp); 
+                        task.prio = min(input.trim().parse().unwrap(),  task.rule.maxp); },	
 						//task.original_prio = input.parse().unwrap(); },
 					_ => println!("invalid input"),
 				}
