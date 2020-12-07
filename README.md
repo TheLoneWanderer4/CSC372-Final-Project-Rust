@@ -1,5 +1,7 @@
 # Language Study : Rust
 
+[Creative Program found here](https://github.com/TheLoneWanderer4/CSC372-Final-Project-Rust/tree/main/priorityManager#priority-manager)
+
 **(A) History and Current Status :**
 
 *Rust* was started as a personal project in 2006 by Graydon Hoare, then an employee at the Mozilla corporation. Mozilla began to sponsor the project in 2009 and accounted it in 2010. The first compiler was written before 2010 in OCaml. After the Mozilla announcement work shifted to a self-hosting compiler `rustc`, which successfully compiled itself in 2011.  
