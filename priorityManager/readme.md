@@ -27,19 +27,25 @@ This program takes advantage of the features of rust by leveraging rusts built i
 ### Visuals of Priority Manager in Action
 
 **Help Command**
+
 ![Help Command](img/help.png)
 
 **Adding a Task**
+
 ![Add a task](img/add.png)
 
 **Listing all Tasks**
+
 ![Listing all](img/listAll.png)
 
 **Listing Tasks with Priority 4**
+
 ![Listing with p4](img/p4.png)
 
 **Edit a Task**
+
 ![edit](img/edit.png)
 
 **Removing a Task**
+
 ![removing](img/remove.png)
