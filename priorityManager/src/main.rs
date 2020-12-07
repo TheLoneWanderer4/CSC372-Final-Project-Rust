@@ -42,6 +42,30 @@ fn main() {
             "edit" => edit(&filename,words),
             "info" => info(&filename, words),
             "reload" => reload(&filename),
+            "help" => {
+                println!("Available Commands : ");
+                println!("> list_all ");
+                println!("\tLists all tasks in the system.");
+                println!("> add_task [-rise X] [-when X] [-maxp X]");
+                println!("\tAdds a task to the system. ");
+                println!("\tOptional parameters -rise and -when should be followed by a number.");
+                println!("\t-when indicates what on what interval priority should rise. The default is 0, indicating priority should rise only on the due date.");
+                println!("\t-rise indicates how much to raise the priority every (specified by -when) days before the duedate. The default is 5, indicating priority should rise to the max priority of this task.");
+                println!("\t-maxp indicates what the maximum priority of this task should be. The default, and cap, is 5.");
+                println!("\tThe remaining fields are supplied following the given prompt.");
+                println!("> list priority");
+                println!("\tLists all tasks having priority priority.");
+                println!("> edit id [-name] [-des] [-due] [-rise] [-when] [-maxp] [-prio]");
+                println!("\tAllows for the task having id id to be editied. Each additional argument results in a new prompt to supply a new value for that field");
+                println!("> info id");
+                println!("\tDisplays the task having id id. ");
+                println!("> reload ");
+                println!("\tReloads current system, will recalculate priorities.");
+                println!("> exit ");
+                println!("\tCloses the program gracefully.");
+                println!("> help ");
+                println!("\tDisplays this help message.");
+            },
             "exit" => break,
             _ => println!("invalid input"),
         }
@@ -59,11 +83,11 @@ fn edit(file_name: &String, user_input: Vec<&str>){
         return;
     } 
 	let deserialized: Vec<Task> = get_tasks_from_file(&file_name);
-    let mut foundTask = false;
+    let mut found_task = false;
 
-    let mut newDeserialized:Vec<Task> = deserialized.into_iter().map(|mut task| {
+    let new_deserialized:Vec<Task> = deserialized.into_iter().map(|mut task| {
         if task.id == curr_id{
-			foundTask = true;
+			found_task = true;
             for i in 2..user_input.len(){
 				match user_input[i]{
 					"-name" => {
@@ -102,7 +126,7 @@ fn edit(file_name: &String, user_input: Vec<&str>){
 						let mut input = String::new();
 						println!("Give max priority");
 						io::stdin().read_line(&mut input).expect("Failed to read line");
-						task.original_prio = min(input.parse().unwrap(),  task.rule.maxp); },	
+                        task.original_prio = min(input.parse().unwrap(),  task.rule.maxp); },	
 						//task.original_prio = input.parse().unwrap(); },
 					_ => println!("invalid input"),
 				}
@@ -110,10 +134,10 @@ fn edit(file_name: &String, user_input: Vec<&str>){
 		}
         return task;
     }).collect();
-    if foundTask == false{
+    if !found_task {
         println!("Task {} not found",curr_id);
     }
-	if write_tasks_to_file(&file_name, &newDeserialized).is_err() {
+	if write_tasks_to_file(&file_name, &new_deserialized).is_err() {
         println!("File not found");
     } 
 	reload(file_name);

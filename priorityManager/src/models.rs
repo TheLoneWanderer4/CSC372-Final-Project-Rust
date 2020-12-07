@@ -22,7 +22,7 @@ impl PartialEq for Rules {
 
 impl fmt::Display for Rules {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-        write!(f, "Rise : {} When : {}", self.rise, self.when)
+        write!(f, "Rise : {} When : {} Max Priority : {}", self.rise, self.when, self.maxp)
     }
 }
 
@@ -101,7 +101,7 @@ pub(crate) fn update_priority(mut task: Task) -> Task {
         }
 
         task.prio = task.original_prio + (task.rule.rise * (task.rule.when / difference));
-        if (task.prio > task.rule.maxp) {
+        if task.prio > task.rule.maxp {
             task.prio = task.rule.maxp
         }
         return task;
