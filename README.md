@@ -1,6 +1,6 @@
 # Language Study : Rust
 
-[Creative Program found here](https://github.com/TheLoneWanderer4/CSC372-Final-Project-Rust/tree/main/priorityManager#priority-manager)
+[Creative Program](https://github.com/TheLoneWanderer4/CSC372-Final-Project-Rust/tree/main/priorityManager#priority-manager)
 
 **(A) History and Current Status :**
 
